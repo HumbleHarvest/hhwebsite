@@ -74,8 +74,9 @@
     display: flex; align-items: center;
     padding: 160px 60px 80px;
     position: relative;
-    overflow: hidden;
+    z-index: 10;
   }
+  .hero-grain, .hero-decor { z-index: 0; }
   .hero-grain {
     position: absolute; inset: 0; pointer-events: none;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
@@ -103,6 +104,8 @@
   .hero-content {
     max-width: 620px;
     animation: fadeUp 1s ease both;
+    position: relative;
+    z-index: 3;
   }
   .hero-eyebrow {
     font-size: 0.72rem;
@@ -164,6 +167,92 @@
     transition: color 0.2s, border-color 0.2s;
   }
   .btn-ghost:hover { color: var(--sage-dark); border-color: var(--sage-dark); }
+
+  /* SHOP DROPDOWN */
+  .shop-wrap { position: relative; display: inline-block; }
+  .btn-primary { border: none; cursor: pointer; font-family: 'Jost', sans-serif; }
+  .shop-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+    width: 340px;
+    background: var(--warm-white);
+    border: 1px solid rgba(92,74,42,0.15);
+    border-radius: 6px;
+    box-shadow: 0 12px 36px rgba(92,74,42,0.18);
+    padding: 22px 24px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+    z-index: 50;
+  }
+  .shop-dropdown.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .shop-dropdown-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    color: #111;
+    margin-bottom: 6px;
+  }
+  .shop-dropdown-sub {
+    font-size: 0.78rem;
+    color: #555;
+    font-weight: 300;
+    line-height: 1.6;
+    margin-bottom: 18px;
+  }
+  .shop-option {
+    display: block;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(92,74,42,0.15);
+    border-radius: 4px;
+    text-decoration: none;
+    color: #111;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .shop-option:hover {
+    background: rgba(173,189,163,0.1);
+    border-color: var(--sage-dark);
+  }
+  .shop-option-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    font-weight: 500;
+    margin-bottom: 3px;
+  }
+  .shop-option-text {
+    font-size: 0.88rem;
+    color: #333;
+    font-weight: 400;
+  }
+  .shop-footer {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(92,74,42,0.12);
+    font-size: 0.78rem;
+    color: #555;
+    font-weight: 300;
+    line-height: 1.55;
+    text-align: center;
+  }
+  .shop-footer a {
+    color: var(--sage-dark);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(122,148,112,0.4);
+  }
+  .shop-footer a:hover { border-bottom-color: var(--sage-dark); }
+  @media (max-width: 560px) {
+    .shop-dropdown { width: calc(100vw - 48px); left: 0; }
+  }
 
   /* BADGE STRIP */
   .badges {
@@ -595,7 +684,7 @@
     width: 100%;
     max-width: 1200px;
   }
-  .hero-photo { flex: 0 0 360px; margin-left: 40px; }
+  .hero-photo { flex: 0 0 360px; margin-left: 40px; position: relative; z-index: 1; }
   .hero-bag-img {
     width: 100%;
     display: block;
@@ -699,7 +788,24 @@
         No shortcuts. No fillers. Only clean ingredients including sprouted oats, nuts and seeds plus pure maple syrup and cold pressed coconut oil. All carefully chosen to create an uncomplicated, great-tasting, and nutrient-rich granola. Handmade in small batches, so every bag tastes like it was made especially for you.
       </p>
       <div class="hero-actions">
-        <a href="#contact" class="btn-primary">Shop Granola</a>
+        <div class="shop-wrap">
+          <button type="button" class="btn-primary" id="shopBtn" aria-haspopup="true" aria-expanded="false">Shop Granola</button>
+          <div class="shop-dropdown" id="shopDropdown" role="menu">
+            <div class="shop-dropdown-title">How to get your bag</div>
+            <div class="shop-dropdown-sub">We're a small-batch operation — here's where to find us.</div>
+            <a href="#markets" class="shop-option" role="menuitem">
+              <div class="shop-option-label">At a Market</div>
+              <div class="shop-option-text">See upcoming farmers markets →</div>
+            </a>
+            <a href="#contact" class="shop-option" role="menuitem">
+              <div class="shop-option-label">Local Pickup</div>
+              <div class="shop-option-text">Available by arrangement</div>
+            </a>
+            <div class="shop-footer">
+              For other ways to buy, please email us at <a href="mailto:orders@humbleharvestgranola.com">orders@humbleharvestgranola.com</a>
+            </div>
+          </div>
+        </div>
         <a href="#story" class="btn-ghost">Read Our Story</a>
       </div>
     </div>
@@ -1003,6 +1109,30 @@
     if (Math.abs(diff) > 40) showBagSlide(bagCurrent + (diff > 0 ? 1 : -1));
   });
   bagDots.forEach((dot, i) => dot.addEventListener('click', () => showBagSlide(i)));
+
+  // Shop dropdown
+  const shopBtn = document.getElementById('shopBtn');
+  const shopDropdown = document.getElementById('shopDropdown');
+
+  shopBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = shopDropdown.classList.toggle('open');
+    shopBtn.setAttribute('aria-expanded', isOpen);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!shopDropdown.contains(e.target) && e.target !== shopBtn) {
+      shopDropdown.classList.remove('open');
+      shopBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      shopDropdown.classList.remove('open');
+      shopBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
 </script>
 
 </body>
