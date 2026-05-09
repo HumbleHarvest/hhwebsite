@@ -687,7 +687,8 @@
   }
   .hero-photo { flex: 0 0 360px; margin-left: 40px; position: relative; z-index: 1; }
   .hero-bag-img {
-    width: 100%;
+    width: 85%;
+    margin: 0 auto;
     display: block;
     filter: drop-shadow(0 24px 48px rgba(92,74,42,0.18));
   }
@@ -722,8 +723,23 @@
     transition: background 0.2s;
   }
   .bag-dot.active { background: var(--sage-dark); }
-  .hero-bag-img--back { width: 95%; margin: 0 auto; display: block; }
+  .hero-bag-img--back { width: 85%; margin: 0 auto; display: block; }
   .hero-bag-img--nutrition { width: 48%; margin: 0 auto; display: block; }
+  .bag-magnifier {
+    position: absolute;
+    width: 220px;
+    height: 160px;
+    border: 2px solid rgba(255,255,255,0.9);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    background-repeat: no-repeat;
+    pointer-events: none;
+    display: none;
+    z-index: 5;
+  }
+  @media (hover: none) {
+    .bag-magnifier { display: none !important; }
+  }
   @media (max-width: 900px) {
     .hero-inner { flex-direction: column; gap: 40px; }
     .hero-photo { flex: none; width: 100%; max-width: 480px; align-self: center; }
@@ -820,10 +836,10 @@
         <button class="bag-arrow bag-arrow--next" aria-label="Next photo" onclick="showBagSlide(bagCurrent + 1)">›</button>
         <div class="bag-carousel-track">
           <div class="bag-slide active">
-            <img src="assets/images/Front_transparent.png" alt="Front of bag" class="hero-bag-img">
+            <img src="assets/images/New New Bag.png" alt="Front of bag" class="hero-bag-img">
           </div>
           <div class="bag-slide">
-            <img src="assets/images/Back_transparent.png" alt="Back of bag" class="hero-bag-img hero-bag-img--back">
+            <img src="assets/images/new new back of bag.png" alt="Back of bag" class="hero-bag-img hero-bag-img--back">
           </div>
           <div class="bag-slide">
             <img src="assets/images/8oz net wt Maple Pecan - REV.png" alt="Nutrition label" class="hero-bag-img hero-bag-img--nutrition">
@@ -834,6 +850,7 @@
           <span class="bag-dot"></span>
           <span class="bag-dot"></span>
         </div>
+        <div class="bag-magnifier" aria-hidden="true"></div>
       </div>
     </div>
   </div>
@@ -1114,6 +1131,41 @@
     if (Math.abs(diff) > 40) showBagSlide(bagCurrent + (diff > 0 ? 1 : -1));
   });
   bagDots.forEach((dot, i) => dot.addEventListener('click', () => showBagSlide(i)));
+
+  // Hover magnifier for bag images
+  const bagMagnifier = document.querySelector('.bag-magnifier');
+  const bagCarousel = document.querySelector('.bag-carousel');
+  const ZOOM = 2;
+  if (bagMagnifier && window.matchMedia('(hover: hover)').matches) {
+    function moveBagMagnifier(e) {
+      const activeImg = document.querySelector('.bag-slide.active img');
+      if (!activeImg) return;
+      const carouselRect = bagCarousel.getBoundingClientRect();
+      const imgRect = activeImg.getBoundingClientRect();
+      const cx = e.clientX - imgRect.left;
+      const cy = e.clientY - imgRect.top;
+      if (cx < 0 || cy < 0 || cx > imgRect.width || cy > imgRect.height) {
+        bagMagnifier.style.display = 'none';
+        return;
+      }
+      const lensW = bagMagnifier.offsetWidth;
+      const lensH = bagMagnifier.offsetHeight;
+      const bgW = imgRect.width * ZOOM;
+      const bgH = imgRect.height * ZOOM;
+      let bgX = -(cx * ZOOM - lensW / 2);
+      let bgY = -(cy * ZOOM - lensH / 2);
+      bgX = Math.min(0, Math.max(lensW - bgW, bgX));
+      bgY = Math.min(0, Math.max(lensH - bgH, bgY));
+      bagMagnifier.style.display = 'block';
+      bagMagnifier.style.backgroundImage = `url("${activeImg.currentSrc || activeImg.src}")`;
+      bagMagnifier.style.backgroundSize = `${bgW}px ${bgH}px`;
+      bagMagnifier.style.backgroundPosition = `${bgX}px ${bgY}px`;
+      bagMagnifier.style.left = `${e.clientX - carouselRect.left - lensW / 2}px`;
+      bagMagnifier.style.top = `${e.clientY - carouselRect.top - lensH / 2}px`;
+    }
+    bagTrack.addEventListener('mousemove', moveBagMagnifier);
+    bagTrack.addEventListener('mouseleave', () => { bagMagnifier.style.display = 'none'; });
+  }
 
   // Shop dropdown
   const shopBtn = document.getElementById('shopBtn');
