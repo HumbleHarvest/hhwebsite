@@ -76,8 +76,14 @@
   .hero {
     min-height: 100vh;
     background-color: var(--cream);
-    display: flex; align-items: center;
-    padding: 160px 60px 80px;
+    display: flex;
+    align-items: center;
+    align-items: safe center;
+    /* Top padding must exceed the fixed nav (~166px at full logo height), not
+       just meet it. At 160px the hero text cleared the nav only when a tall
+       carousel slide pushed the centered text column down; short slides let it
+       slip under. safe center keeps it clear if content ever exceeds the vh. */
+    padding: 190px 60px 80px;
     position: relative;
     z-index: 10;
   }
@@ -730,6 +736,38 @@
   .bag-dot.active { background: var(--sage-dark); }
   .hero-bag-img--back { width: 85%; margin: 0 auto; display: block; }
   .hero-bag-img--nutrition { width: 48%; margin: 0 auto; display: block; }
+  .sprout-card {
+    width: 85%;
+    margin: 0 auto;
+    padding: 34px 30px;
+    background: linear-gradient(160deg, var(--warm-white) 0%, var(--cream) 100%);
+    border: 1px solid rgba(122,148,112,0.28);
+    border-radius: 14px;
+    box-shadow: 0 24px 48px rgba(92,74,42,0.18);
+    text-align: left;
+  }
+  .sprout-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--moss);
+    margin: 0;
+    line-height: 1.2;
+  }
+  .sprout-card-title::after {
+    content: "";
+    display: block;
+    width: 46px; height: 2px;
+    background: var(--sage);
+    margin: 12px 0 16px;
+  }
+  .sprout-card-body {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: var(--text-soft);
+    margin: 0;
+  }
   .bag-magnifier {
     position: absolute;
     width: 220px;
@@ -841,13 +879,16 @@
         <button class="bag-arrow bag-arrow--next" aria-label="Next photo" onclick="showBagSlide(bagCurrent + 1)">›</button>
         <div class="bag-carousel-track">
           <div class="bag-slide active">
-            <img src="assets/images/New New Bag.png" alt="Front of bag" class="hero-bag-img">
+            <img src="assets/images/3 product photo.jpg" alt="Front of bag" class="hero-bag-img">
           </div>
           <div class="bag-slide">
-            <img src="assets/images/new new back of bag.png" alt="Back of bag" class="hero-bag-img hero-bag-img--back">
+            <figure class="sprout-card">
+              <h3 class="sprout-card-title">Why sprouted?</h3>
+              <p class="sprout-card-body">Sprouting grains, nuts, and seeds increases nutrient bio-availability, improves digestibility, and reduces anti-nutrients that block mineral absorption. This germinating process boosts vitamins (especially B and C), antioxidants, and enzymes, while breaking down complex starches and proteins into simpler, easier-to-digest forms.</p>
+            </figure>
           </div>
           <div class="bag-slide">
-            <img src="assets/images/8oz net wt Maple Pecan - REV.png" alt="Nutrition label" class="hero-bag-img hero-bag-img--nutrition">
+            <img src="assets/images/Single Cranberry Pecan Nutrition.png" alt="Nutrition label" class="hero-bag-img hero-bag-img--nutrition">
           </div>
         </div>
         <div class="bag-carousel-dots">
@@ -1144,7 +1185,7 @@
   if (bagMagnifier && window.matchMedia('(hover: hover)').matches) {
     function moveBagMagnifier(e) {
       const activeImg = document.querySelector('.bag-slide.active img');
-      if (!activeImg) return;
+      if (!activeImg) { bagMagnifier.style.display = 'none'; return; }
       const carouselRect = bagCarousel.getBoundingClientRect();
       const imgRect = activeImg.getBoundingClientRect();
       const cx = e.clientX - imgRect.left;
