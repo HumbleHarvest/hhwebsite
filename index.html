@@ -512,7 +512,10 @@
   }
   .contact-grid {
     display: flex; align-items: center; justify-content: center;
-    gap: 0; flex-wrap: wrap;
+    /* Row gap matters: a long value wraps the last item onto its own line,
+       and with gap:0 it collided with the row above. Column gap stays 0,
+       since .contact-item padding supplies the horizontal spacing. */
+    gap: 36px 0; flex-wrap: wrap;
     margin-top: 48px;
   }
   .contact-item {
@@ -1122,8 +1125,8 @@
     </div>
     <div class="contact-divider"></div>
     <div class="contact-item">
-      <div class="contact-label">Local Pickup</div>
-      <div class="contact-value">Available by arrangement</div>
+      <div class="contact-label">Shipping</div>
+      <div class="contact-value">Available by arrangement, <a href="mailto:orders@humbleharvestgranola.com">orders@humbleharvestgranola.com</a></div>
     </div>
   </div>
 </section>
